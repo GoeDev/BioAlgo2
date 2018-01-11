@@ -1,0 +1,11 @@
+LSU_train.fasta: Trainingssequenzen im FASTA-Format
+
+Trainingssequenzen (mit Gaps) aus multiplem Alignment von "large subunit" (LSU) 23S rRNA Sequenzen.
+
+LSU_full_test.fasta,LSU_short_test.fasta: Testsequenzen im FASTA-Format
+
+Sequenzen (unterschiedlich lang) zum Testen des Profil-HMMs mit voller Laenge ("full") und als Fragmente ("short").
+
+main.c: C-Programm zum Einlesen der Sequenzen
+
+Die Sequenzen werden in ein zweidimensionales (2d) Array eingelesen. Es wird die längste Sequenz verwendet, um die Größe des zu reservierenden Speichers festzulegen. Wenn damit ohne Änderung auch die Testsequenzen eingelesen werden sollen, dann bedeutet das erste 'X' im Array, dass die Sequenz zu Ende ist. (jede Position des Arrays wird mit 'X' initialisiert). Bei den Trainingssequenzen werden alle Zeichen, die nicht im RNA-Alphabet ('A','C','G','U') vorkommen, als Gaps behandelt. 
