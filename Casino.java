@@ -1,4 +1,3 @@
-package AlgBio;
 
 import java.util.*;
 import java.io.*;
