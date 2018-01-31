@@ -1,4 +1,3 @@
-
 import java.util.*;
 import java.io.*;
 
@@ -46,9 +45,7 @@ public class Casino {
 		//transition from that state to the next state (let out start)
 		if (pos > 1) {
 			for (int i = 1; i < v.length; i++) {
-				//System.out.print(v[i][pos-1]+" "+transition_prob[i][statenr+1]);
 				temp = v[i][pos-1] + Math.log(transition_prob[i][statenr + 1]);  
-				//System.out.print(" "+temp+" ");
 				if (maximum < temp) {
 					maximum = temp;
 					prev_state = hidden_states[i-1]; //i - 1 = no start state
@@ -57,12 +54,8 @@ public class Casino {
 			}
 		}	
 		else { //it is the second column (first one with observations) (start)
-			//System.out.print(statenr+" "+transition_prob[0][statenr+1]+ " ");
-			//v[0][0] = 1
 			maximum = /*log (1.0)+*/ Math.log( transition_prob[0][statenr + 1]);
 		}
-		//System.out.println(" "+ obs.charAt(pos-1)+" "+(obs.charAt(pos-1) - '1')
-		//+" "+emission_prob[statenr][obs.charAt(pos-1) - '1']);
 		
 		
 		v[statenr + 1][pos] = 
@@ -82,17 +75,13 @@ public class Casino {
 		for (int i = 2; i < v.length; i++)
 			if (v[maxpos][v[0].length - 1] < v[i][v[0].length - 1])
 				maxpos = i;
-		
-		//System.out.println(maxpos);
-		
+			
 		res += hidden_states[maxpos-1]; 	//add last state
 		actstate = maxpos;
-		//System.out.println(res);
 		for (int i = bt[0].length - 1; i > 1; i--) {
 			char c = bt[actstate][i];
 			res += c;
 			actstate = (new String(hidden_states)).indexOf(c)+1;
-			//System.out.println(res +" " +actstate);
 		}
 		
 		return (new StringBuilder(res)).reverse().toString();
@@ -116,8 +105,7 @@ public class Casino {
 		while ((line = r.readLine()) != null)
 			b.append(line);
 		r.close();
-		obs = b.toString();
-		//System.out.println("Length: "+obs.length());	
+		obs = b.toString();	
 		
 		v = new double[hidden_states.length + 1][obs.length() + 1];
 		bt = new char[hidden_states.length + 1][obs.length() + 1];
@@ -130,17 +118,6 @@ public class Casino {
 			for (int j = 0; j < hidden_states.length; j++)
 				viterbi(j ,i);
 
-		/*DEBUG 
-		for (int i = 0; i < v.length; i++) {
-			for (int j = 0; j < v[0].length; j++)
-				System.out.print(v[i][j]+"\t");	
-			System.out.println();
-		}
-		for (int i = 0; i < bt.length; i++) {
-			for (int j = 0; j < bt[0].length; j++)
-				System.out.print(bt[i][j]+"\t");	
-			System.out.println();
-		}*/
 		
 		
 		

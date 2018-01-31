@@ -1,5 +1,3 @@
-package AlgBio;
-
 import java.util.*;
 import java.io.*;
 
@@ -91,7 +89,7 @@ public class RNASequenceTrain {
 							ret = getTransition(State.M, succ);
 						else if ( succ == State.E)	//we abused ..TM for ..TE
 							ret = getTransition(prev, State.M);
-						//System.exit(1);
+						
 						break;
 				} 
 	
@@ -171,7 +169,6 @@ public class RNASequenceTrain {
 		
 		
 		
-		//args[0] should contain path to training file
 		String path = args[0];
 		String line = null;
 		ArrayList<String> array = new ArrayList<String>();
@@ -183,7 +180,7 @@ public class RNASequenceTrain {
 				array.add(line);
 		
 		r.close();
-		//System.out.println(array.toString());
+		
 		
 		//init arrays for headers and sequences
 		seqnr = array.size() / 2;
@@ -242,12 +239,7 @@ public class RNASequenceTrain {
 		double temp;
 		for (String t : tester) {
 			testseq = t;
-			temp = processViterbi();
-			
-			//for minimumThreshold
-			//System.out.println(temp+"\t"
-				//	+ (temp >= threshold ? 1 : 0));
-				
+			temp = processViterbi();			
 				
 			//for matchhitThreshold
 			boolean isrRNA = matchhitThreshold(0.8, 3);
@@ -305,10 +297,10 @@ public class RNASequenceTrain {
 		int lastmatchpos = 0;
 		for (int j = 0; j < seqlen; j++) {
 			int countgaps = 0;
-			for (int i = 0; i < seqnr; i++)
+			for (int i = 0; i < seqnr; i++){
 				if (seq[i].charAt(j) == '-')
 					countgaps++; 	
-			
+			}
 			if (2 * countgaps >= seqnr)	//matchposition?
 				isMatch[j] = false;			//no
 			else {
@@ -316,10 +308,10 @@ public class RNASequenceTrain {
 				matnr++;
 				lastmatchpos = j;
 			}
-			//System.out.println(isMatch[j]+" "+ (double) countgaps / seqnr);
+			
 		}
 		
-		//System.out.println(Arrays.toString(isMatch));
+		
 
 		System.out.println("Got matchpositions ("+matnr+")!");
 
@@ -396,14 +388,14 @@ public class RNASequenceTrain {
 			index++;
 		}
 		
-		//System.out.println(Arrays.toString(eprobmat[0]));
+		
 		System.out.println("Estimated at matchpositions!");
 		
 
 		//2.2.2 Estimate at insertionpositions
 		System.out.println("Estimating at insertpositions...");
 		index = 0;
-		//System.out.println(eprobins.length+ " "+ lastmatchpos);
+		
 		boolean flag = false;
 		for (int j = 0; j < eprobins.length; j++) {
 			int sum = 0;
@@ -424,7 +416,7 @@ public class RNASequenceTrain {
 					while (end < isMatch.length && !isMatch[end])
 						end++;
 			
-			//System.out.println("Insert columns from "+index+" to "+end);
+			
 			
 			if (end > index + 1) {
 				//get sum of all ins.positions (columns) from index to end - 1
@@ -456,12 +448,12 @@ public class RNASequenceTrain {
 							/ (sum + p.length * pseudo);
 				eprobins[j] = p;
 			}
-			//System.out.println(sum);
-			//System.out.println(Arrays.toString(eprobins[j]));	
+			
+			
 			index = end;
 		}
 
-		//System.out.println(Arrays.deepToString(eprobins));
+		
 		System.out.println("Estimated at insertpositions!");
 		
 		
@@ -484,7 +476,7 @@ public class RNASequenceTrain {
 		}
 		
 		System.out.println("Saved emissionprobabilities to one matrix!");
-		//System.out.println(Arrays.deepToString(eprob)+"\n\n\n");
+		
 		
 		
 		
@@ -493,7 +485,7 @@ public class RNASequenceTrain {
 		tcounts = new int[matnr + 1][stsize];	//plus one for initial insert
 		
 		for (int i = 0; i < seqnr; i++) {
-			//System.out.println("\tProcessing Seq"+i);
+			
 			//2.3.1 Build state path for this sequence
 			State[] p = new State[seqlen];
 						
@@ -514,12 +506,12 @@ public class RNASequenceTrain {
 		
 		
 			//2.3.2 Count transitions for this path
-			//System.out.println("2.3.2");
-			//System.out.println(Arrays.toString(p));
+			
+			
 			State succ = null, s = p[0];
 			int ptr = 0;
 			
-			//first column of tcounts are transitions from State.B to p[0]			
+			//first column of tcounts are transitions from State.B to[0]			
 			if (s == State.M)	 			//abuse MTM row for BTM
 				tcounts[0][ST.MTM.row]++;
 			else if (s == State.I)			//abuse MTI row for BTI 
@@ -540,10 +532,9 @@ public class RNASequenceTrain {
 					tcounts[0][ST.MTD.row]++;
 				else {
 					System.out.println("Problem at tcounts[0]!");
-					//System.exit(1);
+					
 				}
 			}
-			
 			
 			//is first state an insertstate with gap(s)?
 			if (p[0] == null) {
@@ -593,12 +584,11 @@ public class RNASequenceTrain {
 					System.exit(1);
 				}
 				
-				//System.out.print(ptr+" "+st);
-				tcounts[ptr][st.row]++;
-				//System.out.println(" !");
 				
-				//System.out.println(s+" "+succ+" = "+st);
-	
+				tcounts[ptr][st.row]++;
+				
+				
+				
 			
 				//only increment ptr if the transition was not to an insertstate
 				if (st == ST.MTI || st == ST.ITI || st == ST.DTI)
@@ -643,9 +633,9 @@ public class RNASequenceTrain {
 		
 		
 		//for (ST s : ST.values())
-			//System.out.print(s+" ");
-		//System.out.println("\n"+Arrays.deepToString(tcounts));
-		//System.out.println(Arrays.deepToString(tprob));
+			
+		
+		
 		
 		System.out.println("Counted all transitions!");
 		
@@ -724,15 +714,11 @@ public class RNASequenceTrain {
 		
 		System.out.println("Estimated transitionprobabilities!");
 		System.out.println("#Finished training!\n");
-		//System.out.println(Arrays.deepToString(tprob));		
-	
+		
 	
 	}
 	
-	
-	
-	
-	
+
 	/** Calculates vM at the position (i, j).*/
 	private static void viterbiM(int i, int j) {
 		double maximum = - Double.MAX_VALUE;
@@ -744,7 +730,7 @@ public class RNASequenceTrain {
 		potMax[0] = vM[i-1][j-1] + Math.log(tprob[j-1][ST.MTM.row]);
 		potMax[1] = vI[i-1][j-1] + Math.log(tprob[j-1][ST.ITM.row]);
 		potMax[2] = vD[i-1][j-1] + Math.log(tprob[j-1][ST.DTM.row]);
-		//System.out.println(Arrays.toString(potMax));
+		
 	
 	
 		//get the maximum
@@ -753,7 +739,6 @@ public class RNASequenceTrain {
 				maximum = potMax[z];
 				maxCase = z;
 			}
-	
 		
 		//multiplicate with emissionprobability
 		int xi = "ACGU".indexOf(testseq.charAt(i - 1));
@@ -781,7 +766,7 @@ public class RNASequenceTrain {
 		potMax[0] = vM[i-1][j] + Math.log(tprob[j][ST.MTI.row]);
 		potMax[1] = vI[i-1][j] + Math.log(tprob[j][ST.ITI.row]);
 		potMax[2] = vD[i-1][j] + Math.log(tprob[j][ST.DTI.row]);
-		//System.out.println(Arrays.toString(potMax));
+		
 	
 	
 		//get the maximum
@@ -791,11 +776,9 @@ public class RNASequenceTrain {
 				maxCase = z;
 			}
 		
-		
 		//multiplicate with emissionprobability
 		int xi = "ACGU".indexOf(testseq.charAt(i - 1));
 		vI[i][j] = Math.log(eprobins[j][xi]) + maximum;
-		
 		
 		//for debug/backtrack 
 		dir d = null;
@@ -819,7 +802,6 @@ public class RNASequenceTrain {
 		potMax[0] = vM[i][j-1] + Math.log(tprob[j-1][ST.MTD.row]);
 		potMax[1] = vI[i][j-1] + Math.log(tprob[j-1][ST.ITD.row]);
 		potMax[2] = vD[i][j-1] + Math.log(tprob[j-1][ST.DTD.row]);
-		//System.out.println(Arrays.toString(potMax));
 		
 		
 		//get the maximum
@@ -842,8 +824,7 @@ public class RNASequenceTrain {
 		btD[i][j] = d;
 	}
 	
-	
-	
+
 	/** Process the viterbi algorithm for the testsequence in the variable
 		testseq.
 		@return Score of the viterbi path*/
@@ -881,9 +862,9 @@ public class RNASequenceTrain {
 				viterbiD(i, j);
 			}
 		}
-		//System.out.println(Arrays.deepToString(vM)+"\n");
-		//System.out.println(Arrays.deepToString(vI)+"\n");
-		//System.out.println(Arrays.deepToString(vD)+"\n");
+		
+		
+		
 	
 	
 		//termination
@@ -903,15 +884,10 @@ public class RNASequenceTrain {
 		}
 		
 		//Debug
-		//System.out.println(printStateSeq(ter, lengthOfSequence, matnr));
 		
 		
 		return max;
-		
-		
-		
-	}
-	
+		}
 	
 	/** Calculate the minimum score of the first n trainingsequences plus the
 		logarithmized factor
@@ -925,16 +901,12 @@ public class RNASequenceTrain {
 		for (int i = 0; i < n; i++) {
 			testseq = seq[i].replace("-","");
 			temp = processViterbi();
-			//System.out.println(temp+"\t");
 			if (min > temp)
 				min = temp;
 		}
 		
 		return min + Math.log(factor);
 	}
-	
-	
-	
 	
 	/** Decide, whether the testseq is rRNA / Non-rRNA (see protocol) with the
 		"matchhit-method".
@@ -956,7 +928,7 @@ public class RNASequenceTrain {
 			ter = State.D; 	
 		
 		path = backtrack(ter, lengthOfSequence, matnr, path);
-		//System.out.println(path);
+		
 	
 		//count matchhits of path
 		int hitcounter = 0;
@@ -984,14 +956,14 @@ public class RNASequenceTrain {
 		
 		}
 		
-		//calculate Q and L (also see protocol)
+		//calculate Q and L
 		double Q = (double) hitcounter / lengthOfSequence;
 		double L = 0;
 		for (int i = 0; i < chainlengths.size(); i++)
 			L += chainlengths.get(i);
 		L /= chainlengths.size();
 		
-		//System.out.println(Q+" "+qthr+" "+L+" "+lthr);
+		
 		
 		return (Q >= qthr && L >= lthr);
 	}
